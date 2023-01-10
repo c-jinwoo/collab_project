@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block mycontent %}
+    <div class="row g-3">
+        <div class="col-sm-6">
+            <label for="modelname" class="form-label">Model Name</label>
+            <input type="text" class="form-control hyperparam" id="modelname" name="modelname" placeholder="모델 이름을 입력해주세요(최대 45자)" maxlength="45" value="" />
+        </div>
+        <div class="col-sm-6">
+            <label for="modelepoch" class="form-label">Epoch</label>
+            <input type="number" class="form-control hyperparam hpnum" id="modelepoch" name="modelepoch" min="0" placeholder="에포크를 설정해주세요" value="" />
+        </div>
+        <div class="col-sm-6">
+            <label for="modellr" class="form-label">Learning Rate</label>
+            <input type="number" class="form-control hyperparam hpnum" id="modellr" name="modellr" min="0" placeholder="학습률을 설정해주세요" value="" />
+        </div>
+        <div class="col-sm-6">
+            <label for="modelbs" class="form-label">Batch Size</label>
+            <input type="number" class="form-control hyperparam hpnum" id="modelbs" name="modelbs" min="0" placeholder="배치사이즈를 설정해주세요" value="" />
+        </div>
+        <div class="col-md-12">
+            <label for="pretrained" class="form-label">Model</label>
+            <select class="form-select hyperparam" id="pretrained">
+                <option hidden="" value="-1">학습 시킬 모델을 선택해주세요</option>
+                <option value="-1">(Pretrained) KoELECTRA-small-v3-discriminator</option>    
+                <option value="0">(Pretrained) SKKU Pretrained</option>           
+                {% if inference_model %}
+                    <option value="-2" disabled>---------------------------------------------------------------------</option>
+                    {% for model in inference_model %}
+                        <option value="{{model.id}}">(Finetuned) {{ model.model_name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        <div class="col-md-12">
+            <label for="dataSrc" class="form-label">Data Set</label>
+            {% if data_list %}
+                <select id="dataSrc" class="form-select hyperparam">
+                    <option hidden="" value="-1">데이터를 선택해주세요</option>
+                        {% for data in data_list %}
+                            <option value="{{forloop.counter}}">{{ data }}</option>
+                        {% endfor %}    
+                </select>            
+            {% else %}
+                <select id="dataSrc" class="form-select hyperparam" disabled> 
+                    <option hidden="" value="-1">데이터가 없습니다</option>
+                </select>
+            {% endif %}
+        </div>
+        <div class="col-sm-12">
+            <label for="modeldes" class="form-label">Description</label>
+            <textarea class="form-control hyperparam" id="modeldes" name="modeldes" placeholder="추가 설명을 입력해주세요(최대 200자)" maxlength="200" value=""></textarea>
+        </div>
+    </div>
+    <hr class="my-4">
+    <button class="w-100 btn btn-primary btn-lg mlstart" type="button" onclick="startTraining(this);">
+        <span class="button__text">
+            Start Training
+        </span>
+    </button>    
+    <div class="status" style="display:none;margin-top:50px;"></div>
+
+    <script>
+        var isTrainStart = true;
+        function startTraining(_this){
+            if($("#modelname").val() == ""){
+                modalShow("모델 이름을 입력해주세요.");
+                return;
+            }
+            else if($("#modelepoch").val() == "" || $("#modelepoch").val() <= 0){
+                modalShow("에포크를 설정해주세요.");
+                return;
+            }
+            else if($("#modellr").val() == "" || $("#modellr").val() <= 0){
+                modalShow("학습률을 설정해주세요.");
+                return;
+            }
+            else if($("#modelbs").val() == "" || $("#modelbs").val() <= 0){
+                modalShow("배치사이즈를 설정해주세요.");
+                return;
+            }
+            else if(parseInt($("#pretrained option:selected").val()) < -1){
+                modalShow("사전 학습 모델을 선택해주세요.");
+                return;
+            }
+            else if(parseInt($("#dataSrc option:selected").val()) < 0){
+                modalShow("학습 데이터를 선택해주세요.");
+                return;
+            }
+
+            var param = {
+                "task" : $("#task").val(),
+                "modelname" : $("#modelname").val(),
+                "modelepoch" : Math.round($("#modelepoch").val()),
+                "modellr" : $("#modellr").val(),
+                "modelbs" : Math.round($("#modelbs").val()),
+                "modeldes" : $("#modeldes").val(),
+                "pretrained" : parseInt($("#pretrained option:selected").val()),
+                "dataSrc" : $("#dataSrc option:selected").text(),
+            };
+
+            $(".hyperparam, .mlstart").attr("disabled", true);
+            $(_this).addClass("button__loader");
+            $(".button__text").html("Training....");
+
+            isTrainStart = true;
+            $.ajax({
+                url : "/trainStartAjax/",
+                type : "GET",
+                data : param,
+                dataType : "json",
+                success : function(data) {     
+                    $("input.hyperparam, textarea.hyperparam").val("");
+                    $("select.hyperparam").val(-1);
+                    
+                    modalShow("모델 학습이 성공적으로 완료되었습니다.");
+                },
+                error : function(e) {
+                    modalShow("모델 학습이 실패했습니다.");
+                },
+                complete : function(e){
+                    $(".hyperparam, .mlstart").attr("disabled", false);
+                    $(".mlstart").removeClass("button__loader");        
+                    $(".button__text").html("Start Training");
+                    isTrainStart = false;
+                }
+            });
+        }
+        $(document).ready(function(){
+            $(".hpnum").onkeydown = function(e) {
+                if(!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8)) {
+                    return false;
+                }
+            };
+        });
+    </script>
+{% endblock %}
