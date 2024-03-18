@@ -53,8 +53,8 @@ AWS EC2에서 S3에 있는 모델과 학습 데이터를 불러와 파인 튜닝
 ## Installation
 ### Clone
 ``` bash
-$ git clone https://github.com/c-jinwoo/skku_collab_proj.git
-$ cd skku_collab_proj
+$ git clone https://github.com/c-jinwoo/collab_project.git
+$ cd collab_project
 ```
 ### Requirements
 ``` bash
