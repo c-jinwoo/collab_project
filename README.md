@@ -3,7 +3,7 @@
 
 </br>
 
-## Project
+## Project overview
 ### Task
 딥러닝 기반의 텍스트 마이닝 기술 개발 및 Django 기반 학습 구축 도구 개발
 ### Duration
@@ -12,41 +12,6 @@
 |최진우|권동욱|류도현|김도현|허지원|
 |:---:|:---:|:---:|:---:|:---:|
 |성균관대학교 소프트웨어학과 3학년|성균관대학교 소프트웨어학과 3학년|성균관대학교 소프트웨어학과 3학년|성균관대학교 소프트웨어학과 2학년|성균관대학교 소프트웨어학과 2학년|
-
-### About
-자연어처리(감성분석, 개체명인식) 모델의 학습을 지속적으로 진행하며 추론을 진행할 수 있는 웹 프로젝트입니다
-
-
-- System Architecture
-
-![SystemArchitecture](./img/sa.png)
-
-AWS EC2에서 S3에 있는 모델과 학습 데이터를 불러와 파인 튜닝을 진행하고 성능이 향상된 모델을 다운하거나 S3에 다시 업로드하여 지속적인 관리가 가능한 시스템입니다.
-
-- Database
-
-![ERD](./img/erd.png)
-
-각 모델의 Task, Metric, 크기, 학습 날짜 등은 1:1 맵핑이 되므로 
-별도의 테이블을 생성할 필요가 없었습니다. 따라서 Single table로 모델의 정보를 관리하였습니다.
-
-- Functionality
-
-![page_data](./img/page_data.png)
-
-학습, 추론, 추론 결과 데이터를 관리하는 페이지입니다.
-
-![page_data](./img/page_train.png)
-
-모델을 Matric을 설정하여 학습할 수 있습니다.
-
-![page_data](./img/page_inference.png)
-
-모델을 통해 Inference를 진행합니다. 결과 파일은 S3에 업로드됩니다.
-
-![page_data](./img/page_model.png)
-
-모델 학습 이력을 관리하는 페이지입니다.
 
 </br>
 
@@ -61,7 +26,9 @@ $ cd collab_project
 $ pip install -r requirements.txt
 ```
 
-## Stacks
+</br>
+
+## Tech Stacks
 
 ### Environment
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-007ACC?style=for-the-badge&logo=Visual%20Studio%20Code&logoColor=white)
@@ -90,3 +57,54 @@ $ pip install -r requirements.txt
 ![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white)
 ![Zoom](https://img.shields.io/badge/zoom-2D8CFF?style=for-the-badge&logo=zoom%20Meet&logoColor=white)
+
+</br>
+
+## About project
+자연어처리(감성분석, 개체명인식) 모델의 학습을 지속적으로 진행하며 추론을 진행할 수 있는 웹 프로젝트입니다.
+
+- 주요 로직
+> - Hugging Face API 를 통해 사전 학습 모델을 GPU가 탑재된 AWS EC2 서버에서 학습 및 추론이 가능합니다. 
+> - 파인 튜닝된 모델은 AWS S3에 업로드하여 추후 재학습 혹은 추론에 재사용할 수 있습니다. 
+> - 학습 데이터, 추론할 Unlabeled 데이터, 추론을 마친 Labeled Data는 모두 S3에서 관리합니다. 
+> - 모델 학습 이력을 DB에서 관리합니다.
+
+</br>
+
+- System Architecture
+
+![SystemArchitecture](./img/sa.png)
+
+AWS EC2에서 S3에 있는 언어 모델과 학습 데이터를 불러와 파인 튜닝을 진행하고 성능이 향상된 모델을 다운하거나 S3에 다시 업로드하여 지속적인 관리가 가능한 시스템입니다.
+
+- Database
+
+![ERD](./img/erd.png)
+
+각 언어 모델의 Task, Metric, 크기, 학습 날짜 등은 1:1 맵핑이 되므로 
+별도의 테이블을 생성할 필요가 없었습니다. 따라서 Single table로 모델의 정보를 관리하였습니다.
+
+- Functionality
+
+![page_data](./img/page_data.png)
+
+학습, 추론, 추론 결과 데이터를 관리하는 페이지입니다.
+
+![page_data](./img/page_train.png)
+
+언어 모델을 Matric을 설정하여 학습할 수 있습니다.
+
+![page_data](./img/page_inference.png)
+
+언어 모델을 통해 Inference를 진행합니다. 결과 파일은 S3에 업로드됩니다.
+
+![page_data](./img/page_model.png)
+
+언어 모델 학습 이력을 관리하는 페이지입니다.
+
+</br> 
+
+## Project review
+- Django Framework를 이용하여 Web Application에서 ML 기반의 자연어처리 모델을
+학습하고 학습된 모델을 통해 Inference를 진행할 수 있었습니다.
+- 팀장직을 수행하며 팀원들과 함께 SA, NER에 대해 모델을 파인 튜닝하고, 웹 개발 등 여러 Task를 분배하고 Github을 통한 협업 경험을 쌓을 수 있었습니다.
